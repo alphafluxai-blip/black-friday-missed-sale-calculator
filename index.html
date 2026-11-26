@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>Black Friday Missed-Sale Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        --bg:#faf7f0;
+        --bg-soft:#f0ebdd;
+        --surface:#fffdf7;
+        --ink:#1c2b22;
+        --ink-2:#3d4f44;
+        --muted:#6b7a6e;
+        --line:#e0dccb;
+        --line-strong:#bfc5b0;
+        --accent:#24513c;
+        --accent-bright:#2f6b4f;
+        --accent-soft:#dce8dd;
+        --accent-ink:#ffffff;
+        --panel:#1c2b22;
+        --panel-2:#2a3d31;
+        --panel-ink:#faf7f0;
+        --panel-muted:#b9c6b4;
+        --olive:#5f7d5a;
+        --olive-bright:#8fa998;
+        --good:#3e6b4f;
+        --input-bg:#fdfbf4;
+        --focus:#24513c;
+        --shadow:0 20px 44px rgba(28,43,34,.12), 0 2px 8px rgba(28,43,34,.06);
+        --radius:20px;
+      }
+      @media (prefers-color-scheme: dark){
+        :root{
+          --bg:#121a15;
+          --bg-soft:#18221b;
+          --surface:#1c2820;
+          --ink:#f2efe6;
+          --ink-2:#d8ddd2;
+          --muted:#a3afa0;
+          --line:#2e3d33;
+          --line-strong:#43564a;
+          --accent:#6fa883;
+          --accent-bright:#8fbf9f;
+          --accent-soft:#223528;
+          --accent-ink:#121a15;
+          --panel:#0c130e;
+          --panel-2:#18251c;
+          --panel-ink:#f2efe6;
+          --panel-muted:#a9bba6;
+          --olive:#8fa998;
+          --olive-bright:#a8c3ae;
+          --good:#a8c3ae;
+          --input-bg:#16211a;
+          --focus:#8fbf9f;
+          --shadow:0 18px 40px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.35);
+        }
+      }
+      *{box-sizing:border-box}
+      html{scroll-behavior:smooth}
+      body{
+        margin:0;
+        background:var(--bg);
+        color:var(--ink);
+        font-family:"Manrope", system-ui, -apple-system, Segoe UI, sans-serif;
+        line-height:1.55;
+        -webkit-font-smoothing:antialiased;
+      }
+      a{color:inherit}
+      button, [role="button"], select, summary, input:not([type="checkbox"],[type="radio"]){min-height:2.25rem}
+      :focus-visible{outline:3px solid var(--focus); outline-offset:2px; border-radius:6px}
+
+      .wrap{max-width:1180px; margin:0 auto; padding:0 24px; width:100%}
+      img,svg{max-width:100%}
+
+      /* ---------- Top strip ---------- */
+      .strip{
+        background:var(--panel);
+        color:var(--panel-ink);
+        border-bottom:3px solid var(--accent);
+      }
+      .strip-inner{
+        display:flex; flex-wrap:wrap; gap:8px 18px; align-items:center; justify-content:space-between;
+        padding-top:10px; padding-bottom:10px;
+        font-size:.84rem; font-weight:600; letter-spacing:.01em;
+      }
+      .strip strong{color:var(--accent-bright); font-weight:800}
+      .strip .dates{color:var(--panel-muted); font-weight:600}
+
+      /* ---------- Hero ---------- */
+      .hero{padding:48px 0 16px}
+      .hero-grid{display:grid; grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr); gap:36px; align-items:start}
+      .hero-copy{padding-top:10px; min-width:0}
+      .tag{
+        display:inline-flex; align-items:center; gap:8px;
+        background:var(--surface); border:1px solid var(--line-strong);
+        padding:7px 12px; border-radius:999px;
+        font-size:.76rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-2);
+      }
+      .tag i{width:8px; height:8px; border-radius:50%; background:var(--accent); display:inline-block; flex:none}
+      h1{
+        font-family:"Archivo", "Manrope", sans-serif;
+        font-size:clamp(2.2rem, 4.6vw, 3.35rem);
+        line-height:1.02; letter-spacing:-.025em; font-weight:900;
+        margin:20px 0 16px; text-wrap:balance; color:var(--ink);
+      }
+      h1 .hl{
+        background:var(--accent); color:#fff;
+        padding:.02em .16em .06em; box-decoration-break:clone; -webkit-box-decoration-break:clone;
+        border-radius:6px; white-space:nowrap;
+      }
+      .lede{font-size:1.09rem; line-height:1.65; color:var(--ink-2); max-width:34rem; margin:0 0 22px}
+      .lede strong{color:var(--ink)}
+      .hero-points{list-style:none; margin:0 0 22px; padding:0; display:grid; gap:10px}
+      .hero-points li{display:flex; gap:10px; align-items:flex-start; font-size:.96rem; color:var(--ink-2); font-weight:600}
+      .hero-points svg{flex:none; margin-top:2px; color:var(--accent)}
+      .estimate-note{
+        display:flex; gap:10px; align-items:flex-start;
+        border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:10px; padding:14px 16px;
+        font-size:.88rem; line-height:1.55; color:var(--muted); max-width:34rem; background:var(--surface);
+      }
+      .estimate-note svg{flex:none; margin-top:1px}
+      .estimate-note strong{color:var(--ink-2)}
+
+      /* ---------- Calculator card ---------- */
+      .calc{
+        background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--radius);
+        box-shadow:var(--shadow); overflow:hidden; min-width:0;
+        position:sticky; top:16px;
+      }
+      @media (max-width:1023px){ .calc{position:static} }
+      .calc-head{
+        display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;
+        padding:18px 20px 14px; border-bottom:1px solid var(--line);
+      }
+      .calc-head h2{font-family:"Archivo",sans-serif; font-size:1.05rem; margin:0; letter-spacing:-.01em}
+      .calc-head p{margin:2px 0 0; font-size:.84rem; color:var(--muted); font-weight:600}
+      .currency{display:flex; background:var(--bg-soft); border:1px solid var(--line); border-radius:999px; padding:3px; gap:3px}
+      .currency button{
+        border:0; background:transparent; color:var(--muted); font:inherit; font-weight:800; font-size:.86rem;
+        padding:6px 14px; border-radius:999px; cursor:pointer; min-height:2.25rem; min-width:3.2rem;
+      }
+      .currency button[aria-pressed="true"]{background:var(--accent); color:#fff}
+      @media (prefers-color-scheme: dark){
+        .currency button[aria-pressed="true"]{background:var(--accent); color:#fff}
+      }
+      .calc-body{padding:6px 20px 20px}
+      .field{padding:14px 0 4px; border-bottom:1px solid var(--line)}
+      .field:last-of-type{border-bottom:0}
+      .field-top{display:flex; gap:12px; align-items:flex-end; justify-content:space-between}
+      .field label{font-weight:800; font-size:.95rem; display:block}
+      .field .hint{font-size:.82rem; color:var(--muted); font-weight:600; margin-top:2px; max-width:22rem}
+      .numbox{
+        display:flex; align-items:center; gap:2px; flex:none;
+        background:var(--input-bg); border:1.5px solid var(--line-strong); border-radius:12px; padding:2px 10px;
+      }
+      .numbox span{font-weight:800; color:var(--muted); font-size:1rem}
+      .numbox input{
+        width:5.2rem; border:0; background:transparent; color:var(--ink);
+        font:inherit; font-weight:800; font-size:1.15rem; text-align:right; padding:6px 0;
+      }
+      .numbox input:focus{outline:none}
+      .numbox:focus-within{border-color:var(--focus)}
+      input[type="range"]{
+        width:100%; margin:14px 0 8px; accent-color:var(--accent); height:2.25rem; cursor:pointer;
+      }
+      .scale{display:flex; justify-content:space-between; font-size:.74rem; color:var(--muted); font-weight:700; padding-bottom:6px}
+
+      /* ---------- Result panel ---------- */
+      .result{
+        background:var(--panel); color:var(--panel-ink);
+        padding:22px 20px 20px; position:relative; overflow:hidden;
+      }
+      .result::before{
+        content:""; position:absolute; inset:0 0 auto 0; height:4px;
+        background:repeating-linear-gradient(90deg, var(--accent-bright) 0 26px, transparent 26px 40px);
+        opacity:.9;
+      }
+      .result-label{
+        display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;
+        font-size:.78rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--panel-muted);
+        margin-top:4px;
+      }
+      .est-badge{
+        letter-spacing:.06em; background:rgba(143,169,152,.20); color:#c3d9c6;
+        border:1px solid rgba(143,169,152,.55); padding:4px 9px; border-radius:999px; font-size:.7rem; white-space:nowrap;
+      }
+      .big{
+        font-family:"Archivo",sans-serif; font-weight:900; letter-spacing:-.02em;
+        font-size:clamp(2.6rem, 7vw, 3.6rem); line-height:1; margin:10px 0 4px;
+      }
+      .big-sub{color:var(--panel-muted); font-size:.94rem; font-weight:600; margin:0 0 18px}
+      .big-sub strong{color:var(--panel-ink)}
+      .stat-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+      .stat{
+        background:var(--panel-2); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:12px 12px 10px;
+      }
+      .stat .v{font-family:"Archivo",sans-serif; font-weight:800; font-size:1.22rem; line-height:1.1}
+      .stat .k{font-size:.76rem; color:var(--panel-muted); font-weight:700; margin-top:4px; line-height:1.35}
+      .bar-wrap{margin-top:18px}
+      .bar-head{display:flex; justify-content:space-between; gap:10px; font-size:.8rem; font-weight:700; color:var(--panel-muted); margin-bottom:7px}
+      .bar-head strong{color:var(--panel-ink)}
+      .bar{height:14px; border-radius:999px; background:rgba(255,255,255,.12); overflow:hidden; display:flex}
+      .bar .missed{background:var(--accent-bright); height:100%; transition:width .35s ease}
+      .bar .answered{background:var(--olive-bright); height:100%; transition:width .35s ease}
+      .bar-legend{display:flex; flex-wrap:wrap; gap:6px 16px; margin-top:8px; font-size:.78rem; color:var(--panel-muted); font-weight:600}
+      .dot{display:inline-block; width:9px; height:9px; border-radius:3px; margin-right:6px; vertical-align:-1px}
+      .recover{
+        margin-top:16px; border:1px solid rgba(143,169,152,.45); background:rgba(143,169,152,.10);
+        border-radius:12px; padding:13px 15px; font-size:.92rem; line-height:1.55;
+      }
+      .recover strong{color:#c3d9c6}
+
+      /* ---------- Day breakdown ---------- */
+      .days{padding:34px 0 6px}
+      .section-head{display:flex; flex-wrap:wrap; gap:8px 16px; align-items:baseline; justify-content:space-between; margin-bottom:14px}
+      .section-head h2{font-family:"Archivo",sans-serif; font-size:1.45rem; letter-spacing:-.015em; margin:0}
+      .section-head p{margin:0; color:var(--muted); font-size:.92rem; font-weight:600}
+      .day-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px}
+      .day{
+        background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px;
+      }
+      .day.hot{border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent); background:var(--accent-soft)}
+      @media (prefers-color-scheme: dark){ .day.hot{background:#223528} }
+      .day .d-name{font-family:"Archivo",sans-serif; font-weight:800; font-size:.98rem; display:flex; justify-content:space-between; align-items:center; gap:8px}
+      .day .d-date{font-size:.78rem; color:var(--muted); font-weight:700; margin-top:1px}
+      .day .d-loss{font-family:"Archivo",sans-serif; font-weight:900; font-size:1.5rem; margin:12px 0 2px; letter-spacing:-.01em}
+      .day .d-meta{font-size:.82rem; color:var(--muted); font-weight:600; line-height:1.45}
+      .pill{font-size:.66rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; background:var(--accent); color:#fff; padding:4px 8px; border-radius:999px; white-space:nowrap}
+      .formula{
+        margin-top:14px; background:var(--bg-soft); border:1px solid var(--line); border-radius:12px;
+        padding:13px 16px; font-size:.9rem; color:var(--ink-2);
+      }
+      .formula code{
+        font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.86em;
+        background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:1px 6px; white-space:normal;
+      }
+      .formula strong{color:var(--ink)}
+
+      /* ---------- How it works ---------- */
+      .how{padding:38px 0 6px}
+      .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+      .step{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px}
+      .step .n{
+        width:40px; height:40px; border-radius:50%; background:var(--accent); color:#fff;
+        display:flex; align-items:center; justify-content:center;
+        font-family:"Archivo",sans-serif; font-weight:900; font-size:1.05rem; margin-bottom:14px;
+      }
+      .step h3{margin:0 0 6px; font-size:1rem; font-family:"Archivo",sans-serif}
+      .step p{margin:0; font-size:.9rem; color:var(--muted); font-weight:500}
+
+      /* ---------- CTA ---------- */
+      .cta{
+        margin:40px 0 8px; background:var(--panel); color:var(--panel-ink);
+        border-radius:20px; padding:30px 28px; position:relative; overflow:hidden;
+      }
+      .cta::before{
+        content:""; position:absolute; inset:0 0 auto 0; height:4px;
+        background:repeating-linear-gradient(90deg, var(--accent-bright) 0 26px, transparent 26px 40px);
+      }
+      .cta-grid{display:grid; grid-template-columns:1.1fr .9fr; gap:26px; align-items:center}
+      .cta h2{font-family:"Archivo",sans-serif; font-size:clamp(1.5rem,3.4vw,2rem); line-height:1.08; letter-spacing:-.015em; margin:6px 0 10px}
+      .cta p{color:var(--panel-muted); margin:0; font-size:.98rem; max-width:30rem}
+      .cta p strong{color:var(--panel-ink)}
+      .cta-actions{display:grid; gap:12px}
+      .btn{
+        display:flex; align-items:center; justify-content:center; gap:10px;
+        text-decoration:none; font-weight:800; font-size:1rem;
+        padding:14px 18px; border-radius:12px; min-height:3.25rem; text-align:center;
+        transition:transform .12s ease;
+      }
+      .btn:active{transform:scale(.985)}
+      .btn-primary{background:var(--accent); color:#fff}
+      .btn-primary:hover{background:#1a3d2c}
+      .btn-whatsapp{background:#24513c; color:#fff; box-shadow:inset 0 0 0 1.5px #8fa998}
+      .btn-whatsapp:hover{background:#2f6b4f}
+      .btn small{display:block; font-size:.76rem; font-weight:700; opacity:.75}
+      .btn .btn-text{text-align:left; line-height:1.25}
+      .cta-fine{font-size:.8rem; color:var(--panel-muted); text-align:center}
+
+      /* ---------- FAQ ---------- */
+      .faq{padding:34px 0 10px}
+      .faq-list{display:grid; gap:10px}
+      details{
+        background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:4px 18px;
+      }
+      summary{cursor:pointer; font-weight:800; font-size:.98rem; padding:12px 0; list-style:none; display:flex; justify-content:space-between; gap:12px; align-items:center}
+      summary::-webkit-details-marker{display:none}
+      summary::after{content:"+"; font-family:"Archivo",sans-serif; font-size:1.3rem; color:var(--accent); flex:none}
+      details[open ] summary::after{content:"–"}
+      details p{margin:0 0 14px; color:var(--muted); font-size:.92rem}
+
+      footer{border-top:1px solid var(--line); margin-top:36px; padding:22px 0 34px}
+      footer p{font-size:.82rem; color:var(--muted); margin:0 0 8px; max-width:52rem}
+      footer p strong{color:var(--ink-2)}
+
+      /* ---------- Responsive: laptop / tablet / mobile ---------- */
+      /* Small laptop & large tablet landscape */
+      @media (max-width:1023px){
+        .hero{padding-top:36px}
+        .hero-grid{grid-template-columns:1fr; gap:28px}
+        .hero-copy{max-width:42rem}
+        .lede,.estimate-note{max-width:42rem}
+        .calc{max-width:680px; width:100%; margin:0 auto}
+        .day-grid{grid-template-columns:repeat(2,1fr)}
+      }
+      /* Tablet portrait */
+      @media (max-width:820px){
+        .wrap{padding:0 20px}
+        .cta-grid{grid-template-columns:1fr; gap:20px}
+        .cta p{max-width:none}
+        .steps{grid-template-columns:1fr; gap:10px}
+        .step{display:grid; grid-template-columns:40px 1fr; column-gap:14px; align-items:start}
+        .step .n{margin-bottom:0; grid-row:span 2}
+        .section-head{flex-direction:column; align-items:flex-start; gap:4px}
+        .strip-inner{justify-content:flex-start}
+      }
+      /* Mobile */
+      @media (max-width:560px){
+        .wrap{padding:0 16px}
+        .hero{padding-top:28px}
+        h1{font-size:2.05rem}
+        h1 .hl{white-space:normal}
+        .lede{font-size:1rem}
+        .calc-head{flex-direction:column; align-items:stretch; padding:16px 16px 12px}
+        .currency{align-self:flex-start}
+        .calc-body{padding:4px 16px 16px}
+        .result{padding:20px 16px 18px}
+        .field-top{flex-direction:column; align-items:stretch; gap:10px}
+        .field .hint{max-width:none}
+        .numbox{align-self:flex-start; width:100%; justify-content:flex-end}
+        .numbox input{flex:1; width:auto}
+        .stat-grid{grid-template-columns:1fr; gap:8px}
+        .stat{display:flex; align-items:baseline; justify-content:space-between; gap:14px; padding:12px 14px}
+        .stat .v{font-size:1.3rem; order:2}
+        .stat .k{margin-top:0; font-size:.82rem; order:1}
+        .bar-head{flex-direction:column; gap:2px}
+        .day-grid{grid-template-columns:1fr}
+        .day .d-loss{font-size:1.65rem}
+        .cta{padding:24px 20px; border-radius:16px; margin-top:32px}
+        .btn{width:100%}
+        details{padding:4px 14px}
+        footer{padding-bottom:28px}
+      }
+      @media (max-width:380px){
+        .currency button{padding:6px 10px; min-width:0}
+        .big{font-size:2.35rem}
+      }
+      @media (prefers-reduced-motion: reduce){
+        html{scroll-behavior:auto}
+        .bar .missed, .bar .answered, .btn{transition:none}
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="strip">
+      <div class="wrap strip-inner">
+        <span><strong>Black Friday weekend</strong> &mdash; the busiest phone days of the year</span>
+        <span class="dates">Fri 27 Nov &ndash; Mon 30 Nov 2026 &middot; 4 days</span>
+      </div>
+    </div>
+
+    <main class="wrap">
+
+      <section class="hero">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <span class="tag"><i></i> Free calculator &middot; 30 seconds</span>
+            <h1>Missed calls this Black Friday could cost you <span class="hl">real sales.</span></h1>
+            <p class="lede">When the phones ring non-stop, some calls slip through &mdash; and most callers never call back. Enter your own numbers and see an <strong>estimate</strong> of what those missed calls could cost you across the 4-day Black Friday weekend.</p>
+            <ul class="hero-points">
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                Built for small businesses that sell by phone &mdash; clinics, salons, trades, dealerships, law firms, shops
+              </li>
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                Uses only your numbers &mdash; no sign-up, nothing to download
+              </li>
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                See the day-by-day breakdown for Friday, Saturday, Sunday and Cyber Monday
+              </li>
+            </ul>
+            <div class="estimate-note">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              <span><strong>Every figure on this page is an estimate</strong> based on the numbers you enter. It is not a measurement of your business and not a guarantee of results &mdash; it is a planning tool to size up the problem.</span>
+            </div>
+          </div>
+
+          <div class="calc" aria-label="Missed sale calculator">
+            <div class="calc-head">
+              <div>
+                <h2>Your numbers</h2>
+                <p>Results update as you type.</p>
+              </div>
+              <div class="currency" role="group" aria-label="Currency">
+                <button type="button" id="curUSD" aria-pressed="true">$ USD</button>
+                <button type="button" id="curGBP" aria-pressed="false">&pound; GBP</button>
+              </div>
+            </div>
+
+            <div class="calc-body">
+              <div class="field">
+                <div class="field-top">
+                  <div>
+                    <label for="callsNum">Average calls per day</label>
+                    <div class="hint">On a busy day &mdash; enquiries, bookings and orders combined.</div>
+                  </div>
+                  <div class="numbox">
+                    <input id="callsNum" type="number" inputmode="numeric" min="1" max="500" step="1" value="40" aria-label="Average calls per day" />
+                  </div>
+                </div>
+                <input id="callsRange" type="range" min="1" max="200" step="1" value="40" aria-hidden="true" tabindex="-1" />
+                <div class="scale"><span>1</span><span>200</span></div>
+              </div>
+
+              <div class="field">
+                <div class="field-top">
+                  <div>
+                    <label for="valueNum">Average sale value</label>
+                    <div class="hint">What one converted call is typically worth &mdash; a booking, job or order.</div>
+                  </div>
+                  <div class="numbox">
+                    <span id="valueSymbol">$</span>
+                    <input id="valueNum" type="number" inputmode="decimal" min="0" max="10000" step="5" value="150" aria-label="Average sale value" />
+                  </div>
+                </div>
+                <input id="valueRange" type="range" min="10" max="1000" step="5" value="150" aria-hidden="true" tabindex="-1" />
+                <div class="scale"><span id="scaleMin">$10</span><span id="scaleMax">$1,000</span></div>
+              </div>
+
+              <div class="field">
+                <div class="field-top">
+                  <div>
+                    <label for="missedNum">Calls you miss</label>
+                    <div class="hint">Share of calls that ring out, hit voicemail or come in after hours.</div>
+                  </div>
+                  <div class="numbox">
+                    <input id="missedNum" type="number" inputmode="numeric" min="0" max="100" step="1" value="25" aria-label="Percentage of calls missed" />
+                    <span>%</span>
+                  </div>
+                </div>
+                <input id="missedRange" type="range" min="0" max="80" step="1" value="25" aria-hidden="true" tabindex="-1" />
+                <div class="scale"><span>0%</span><span>80%</span></div>
+              </div>
+            </div>
+
+            <div class="result" aria-live="polite">
+              <div class="result-label">
+                <span>Estimated lost sales &middot; 4-day weekend</span>
+                <span class="est-badge">Estimate</span>
+              </div>
+              <div class="big" id="bigLoss">$6,000</div>
+              <p class="big-sub">That is roughly <strong id="bigPerDay">$1,500 per day</strong> in estimated sales walking to whoever picks up first.</p>
+
+              <div class="stat-grid">
+                <div class="stat">
+                  <div class="v" id="statMissedCalls">40</div>
+                  <div class="k">Estimated missed calls over the weekend</div>
+                </div>
+                <div class="stat">
+                  <div class="v" id="statMissedDay">10</div>
+                  <div class="k">Estimated missed calls per day</div>
+                </div>
+                <div class="stat">
+                  <div class="v" id="statTotalCalls">160</div>
+                  <div class="k">Total calls expected over 4 days</div>
+                </div>
+              </div>
+
+              <div class="bar-wrap">
+                <div class="bar-head"><span>Where your weekend calls go</span><span><strong id="barMissedPct">25%</strong> missed</span></div>
+                <div class="bar" role="img" aria-label="Bar showing answered versus missed calls">
+                  <div class="answered" id="barAnswered" style="width:75%"></div>
+                  <div class="missed" id="barMissed" style="width:25%"></div>
+                </div>
+                <div class="bar-legend">
+                  <span><span class="dot" style="background:#8fa998"></span>Answered</span>
+                  <span><span class="dot" style="background:var(--accent-bright)"></span>Missed &mdash; estimated lost sales</span>
+                </div>
+              </div>
+
+              <div class="recover">
+                If a text-back caught even <strong>half</strong> of those missed callers and started a conversation, that is an estimated <strong id="recoverAmt">$3,000</strong> of the weekend&rsquo;s sales back in play. See how it works below.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="days" aria-label="Day by day breakdown">
+        <div class="section-head">
+          <h2>Day by day: Fri 27 &ndash; Mon 30 Nov</h2>
+          <p>Same estimate, split evenly across the 4 days</p>
+        </div>
+        <div class="day-grid">
+          <article class="day hot">
+            <div class="d-name">Friday <span class="pill">Black Friday</span></div>
+            <div class="d-date">27 Nov 2026</div>
+            <div class="d-loss" data-day-loss>$1,500</div>
+            <div class="d-meta"><span data-day-missed>10</span> missed calls &times; <span data-day-value>$150</span> avg. sale</div>
+          </article>
+          <article class="day">
+            <div class="d-name">Saturday</div>
+            <div class="d-date">28 Nov 2026</div>
+            <div class="d-loss" data-day-loss>$1,500</div>
+            <div class="d-meta"><span data-day-missed>10</span> missed calls &times; <span data-day-value>$150</span> avg. sale</div>
+          </article>
+          <article class="day">
+            <div class="d-name">Sunday</div>
+            <div class="d-date">29 Nov 2026</div>
+            <div class="d-loss" data-day-loss>$1,500</div>
+            <div class="d-meta"><span data-day-missed>10</span> missed calls &times; <span data-day-value>$150</span> avg. sale</div>
+          </article>
+          <article class="day hot">
+            <div class="d-name">Monday <span class="pill">Cyber Monday</span></div>
+            <div class="d-date">30 Nov 2026</div>
+            <div class="d-loss" data-day-loss>$1,500</div>
+            <div class="d-meta"><span data-day-missed>10</span> missed calls &times; <span data-day-value>$150</span> avg. sale</div>
+          </article>
+        </div>
+        <div class="formula">
+          <strong>How the estimate works:</strong>
+          <code>calls per day &times; 4 days &times; % missed &times; average sale value = estimated lost sales</code>.
+          It assumes your call volume and missed rate stay steady across the weekend, and that each missed call could have become one average sale. Busy sale days often run hotter than average &mdash; adjust the inputs to match your business.
+        </div>
+      </section>
+
+      <section class="how" aria-label="How missed-call text-back works">
+        <div class="section-head">
+          <h2>The fix: every missed call gets a text back</h2>
+          <p>What the live demo shows you, on a real number</p>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="n">1</div>
+            <h3>A call is missed</h3>
+            <p>Your team is with a customer, it is after hours, or the line is simply busy. The caller hangs up &mdash; this is where most businesses lose them.</p>
+          </div>
+          <div class="step">
+            <div class="n">2</div>
+            <h3>They get a text in 60 seconds</h3>
+            <p>The system automatically texts the caller back within 60 seconds with a real reply, so the conversation starts before they dial a competitor.</p>
+          </div>
+          <div class="step">
+            <div class="n">3</div>
+            <h3>The enquiry is logged</h3>
+            <p>Every missed call and reply is logged for you, so nothing slips through and your team can pick up the conversation whenever they are free.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta" aria-label="Book a live demo">
+        <div class="cta-grid">
+          <div>
+            <span class="tag" style="background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.14); color:var(--panel-muted)"><i></i> Free &middot; 15 minutes &middot; Live</span>
+            <h2>See it catch a missed call, live on your own number.</h2>
+            <p>Book a <strong>15-minute live demo</strong> of the missed-call text-back system. You will see a missed call get answered by text in 60 seconds and logged &mdash; on a live demo, not a slide deck. No pitch, no obligation.</p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn btn-primary" href="https://calendly.com/alphafluxai/ai-consulation" target="_blank" rel="noopener">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+              <span class="btn-text">Book my 15-minute live demo<small>Pick a time that suits you</small></span>
+            </a>
+            <a class="btn btn-whatsapp" href="https://wa.me/923153647191" target="_blank" rel="noopener">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.029 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.889 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+              <span class="btn-text">Chat on WhatsApp<small>Ask a question or grab a demo time</small></span>
+            </a>
+            <div class="cta-fine">Prefer to run the numbers again first? Scroll up and try a busier day &mdash; the estimate updates live.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="faq" aria-label="Questions">
+        <div class="section-head">
+          <h2>Quick questions</h2>
+        </div>
+        <div class="faq-list">
+          <details open>
+            <summary>Are these my real losses?</summary>
+            <p>No. Every figure here is an estimate calculated from the three numbers you enter, using the formula shown above. Your actual losses depend on how many missed callers would have bought, which only your own call records can tell you. Use this to size the problem, not as an audited figure.</p>
+          </details>
+          <details>
+            <summary>I don&rsquo;t know my missed-call percentage. What should I enter?</summary>
+            <p>Start with your best guess. If your phone rings out during busy periods, at lunch, or after hours, try 20&ndash;30% and see the estimate. You can also check your phone system or provider&rsquo;s call log for unanswered calls and divide by total calls.</p>
+          </details>
+          <details>
+            <summary>Why Friday to Monday?</summary>
+            <p>The Black Friday weekend runs 4 days: Black Friday (Fri 27 Nov), Saturday 28 Nov, Sunday 29 Nov and Cyber Monday (Mon 30 Nov 2026). Callers who cannot reach you on any of those days are just as likely to buy elsewhere.</p>
+          </details>
+          <details>
+            <summary>What happens on the 15-minute demo?</summary>
+            <p>You see the missed-call text-back system working live: a call is deliberately missed, the caller receives a text back within 60 seconds, the conversation continues by text, and the enquiry appears in the log. You can ask anything &mdash; there is no obligation to buy.</p>
+          </details>
+          <details>
+            <summary>Does the system replace my team?</summary>
+            <p>No. It only covers the calls nobody could answer. Your team still handles every conversation as normal &mdash; the text-back simply stops a missed caller from disappearing before your team gets a chance.</p>
+          </details>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <p><strong>About these figures:</strong> All amounts on this page are estimates generated from your inputs (calls per day &times; 4 days &times; missed percentage &times; average sale value). They are illustrative planning figures, not measured results, audited losses, or a promise of future sales. Individual results vary by business, call volume and season.</p>
+        <p>Black Friday Missed-Sale Calculator &middot; Weekend covered: Friday 27 November to Monday 30 November 2026.</p>
+      </div>
+    </footer>
+
+    <script>
+      (function(){
+        var DAYS = 4;
+        var currency = 'USD';
+
+        var callsNum = document.getElementById('callsNum');
+        var callsRange = document.getElementById('callsRange');
+        var valueNum = document.getElementById('valueNum');
+        var valueRange = document.getElementById('valueRange');
+        var missedNum = document.getElementById('missedNum');
+        var missedRange = document.getElementById('missedRange');
+        var valueSymbol = document.getElementById('valueSymbol');
+        var scaleMin = document.getElementById('scaleMin');
+        var scaleMax = document.getElementById('scaleMax');
+
+        var bigLoss = document.getElementById('bigLoss');
+        var bigPerDay = document.getElementById('bigPerDay');
+        var statMissedCalls = document.getElementById('statMissedCalls');
+        var statMissedDay = document.getElementById('statMissedDay');
+        var statTotalCalls = document.getElementById('statTotalCalls');
+        var barMissed = document.getElementById('barMissed');
+        var barAnswered = document.getElementById('barAnswered');
+        var barMissedPct = document.getElementById('barMissedPct');
+        var recoverAmt = document.getElementById('recoverAmt');
+
+        var btnUSD = document.getElementById('curUSD');
+        var btnGBP = document.getElementById('curGBP');
+
+        function fmtMoney(n){
+          return new Intl.NumberFormat(currency === 'GBP' ? 'en-GB' : 'en-US', {
+            style: 'currency', currency: currency, maximumFractionDigits: 0
+          }).format(Math.round(n));
+        }
+        function fmtNum(n){
+          return new Intl.NumberFormat('en-US').format(Math.round(n));
+        }
+        function clamp(v, min, max){
+          if (isNaN(v)) return min;
+          return Math.min(max, Math.max(min, v));
+        }
+
+        function render(){
+          var calls = clamp(parseFloat(callsNum.value), 0, 500);
+          var value = clamp(parseFloat(valueNum.value), 0, 10000);
+          var missedPct = clamp(parseFloat(missedNum.value), 0, 100);
+
+          var totalCalls = calls * DAYS;
+          var missedPerDay = calls * missedPct / 100;
+          var missedTotal = totalCalls * missedPct / 100;
+          var lossPerDay = missedPerDay * value;
+          var lossTotal = missedTotal * value;
+
+          bigLoss.textContent = fmtMoney(lossTotal);
+          bigPerDay.textContent = fmtMoney(lossPerDay) + ' per day';
+          statMissedCalls.textContent = fmtNum(missedTotal);
+          statMissedDay.textContent = fmtNum(missedPerDay);
+          statTotalCalls.textContent = fmtNum(totalCalls);
+          recoverAmt.textContent = fmtMoney(lossTotal * 0.5);
+
+          barMissed.style.width = missedPct + '%';
+          barAnswered.style.width = (100 - missedPct) + '%';
+          barMissedPct.textContent = Math.round(missedPct) + '%';
+
+          var losses = document.querySelectorAll('[data-day-loss]');
+          for (var i = 0; i < losses.length; i++) losses[i].textContent = fmtMoney(lossPerDay);
+          var misseds = document.querySelectorAll('[data-day-missed]');
+          for (var j = 0; j < misseds.length; j++) misseds[j].textContent = fmtNum(missedPerDay);
+          var values = document.querySelectorAll('[data-day-value]');
+          for (var k = 0; k < values.length; k++) values[k].textContent = fmtMoney(value);
+        }
+
+        function syncFromNum(num, range, min, max){
+          var v = clamp(parseFloat(num.value), min, max);
+          range.value = clamp(v, parseFloat(range.min), parseFloat(range.max));
+          render();
+        }
+        function syncFromRange(range, num){
+          num.value = range.value;
+          render();
+        }
+
+        callsNum.addEventListener('input', function(){ syncFromNum(callsNum, callsRange, 0, 500); });
+        callsNum.addEventListener('change', function(){ callsNum.value = clamp(parseFloat(callsNum.value), 0, 500); syncFromNum(callsNum, callsRange, 0, 500); });
+        callsRange.addEventListener('input', function(){ syncFromRange(callsRange, callsNum); });
+
+        valueNum.addEventListener('input', function(){ syncFromNum(valueNum, valueRange, 0, 10000); });
+        valueNum.addEventListener('change', function(){ valueNum.value = clamp(parseFloat(valueNum.value), 0, 10000); syncFromNum(valueNum, valueRange, 0, 10000); });
+        valueRange.addEventListener('input', function(){ syncFromRange(valueRange, valueNum); });
+
+        missedNum.addEventListener('input', function(){ syncFromNum(missedNum, missedRange, 0, 100); });
+        missedNum.addEventListener('change', function(){ missedNum.value = clamp(parseFloat(missedNum.value), 0, 100); syncFromNum(missedNum, missedRange, 0, 100); });
+        missedRange.addEventListener('input', function(){ syncFromRange(missedRange, missedNum); });
+
+        function setCurrency(c){
+          currency = c;
+          btnUSD.setAttribute('aria-pressed', c === 'USD' ? 'true' : 'false');
+          btnGBP.setAttribute('aria-pressed', c === 'GBP' ? 'true' : 'false');
+          var sym = c === 'GBP' ? '£' : '$';
+          valueSymbol.textContent = sym;
+          scaleMin.textContent = sym + '10';
+          scaleMax.textContent = sym + '1,000';
+          render();
+        }
+        btnUSD.addEventListener('click', function(){ setCurrency('USD'); });
+        btnGBP.addEventListener('click', function(){ setCurrency('GBP'); });
+
+        render();
+      })();
+    </script>
+  </body>
+</html>
